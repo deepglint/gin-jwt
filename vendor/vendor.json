@@ -9,25 +9,25 @@
 			"revisionTime": "2017-01-30T12:10:44Z"
 		},
 		{
-			"checksumSHA1": "dvabztWVQX8f6oMLRyv4dLH+TGY=",
+			"checksumSHA1": "mrz/kicZiUaHxkyfvC/DyQcr8Do=",
 			"path": "github.com/davecgh/go-spew/spew",
-			"revision": "346938d642f2ec3594ed81d874461961cd0faa76",
-			"revisionTime": "2016-10-29T20:57:26Z"
+			"revision": "adab96458c51a58dc1783b3335dcce5461522e75",
+			"revisionTime": "2017-07-11T18:34:51Z"
 		},
 		{
-			"checksumSHA1": "UsILDoIB2S7ra+w2fMdb85mX3HM=",
+			"checksumSHA1": "qqjlx9qLgTw1+t6uDDTBlCmT6DQ=",
 			"path": "github.com/gin-gonic/gin/binding",
-			"revision": "e2212d40c62a98b388a5eb48ecbdcf88534688ba",
-			"revisionTime": "2016-12-04T22:13:08Z"
+			"revision": "4b5ec517daa247f8f3bd0448f82ca55c0d14fa0a",
+			"revisionTime": "2017-08-14T03:02:31Z"
 		},
 		{
-			"checksumSHA1": "PHv9FNb7YavJWtAHcY6ZgXmkmHs=",
+			"checksumSHA1": "MwAJrZRDZoQ7CK2Q+T1sBbx6tC0=",
 			"path": "github.com/gin-gonic/gin/render",
-			"revision": "e2212d40c62a98b388a5eb48ecbdcf88534688ba",
-			"revisionTime": "2016-12-04T22:13:08Z"
+			"revision": "4b5ec517daa247f8f3bd0448f82ca55c0d14fa0a",
+			"revisionTime": "2017-08-14T03:02:31Z"
 		},
 		{
-			"checksumSHA1": "kBeNcaKk56FguvPSUCEaH6AxpRc=",
+			"checksumSHA1": "sZSeW3Dc6lUqm1CzMUdu3poimoA=",
 			"path": "github.com/golang/protobuf/proto",
 			"revision": "8ee79997227bf9b34611aee7946ae64735e6fd93",
 			"revisionTime": "2016-11-17T03:31:26Z"
@@ -39,10 +39,10 @@
 			"revisionTime": "2016-01-26T18:01:36Z"
 		},
 		{
-			"checksumSHA1": "EkT5JmFvz3zOPWappEFyYWUaeY0=",
+			"checksumSHA1": "U6lX43KDDlNOn+Z0Yyww+ZzHfFo=",
 			"path": "github.com/mattn/go-isatty",
-			"revision": "281032e84ae07510239465db46bf442aa44b953a",
-			"revisionTime": "2017-02-09T17:56:15Z"
+			"revision": "fc9e8d8ef48496124e79ae0df75490096eccf6fe",
+			"revisionTime": "2017-03-22T23:44:13Z"
 		},
 		{
 			"checksumSHA1": "LuFv4/jlrmFNnDb/5SCSEPAM9vU=",
@@ -51,22 +51,22 @@
 			"revisionTime": "2016-01-10T10:55:54Z"
 		},
 		{
-			"checksumSHA1": "K0crHygPTP42i1nLKWphSlvOQJw=",
+			"checksumSHA1": "EO+jcRet/AJ6IY3lBO8l8BLsZWg=",
 			"path": "github.com/stretchr/objx",
-			"revision": "1a9d0bb9f541897e62256577b352fdbc1fb4fd94",
-			"revisionTime": "2015-09-28T12:21:52Z"
+			"revision": "cbeaeb16a013161a98496fad62933b1d21786672",
+			"revisionTime": "2014-05-26T18:09:21Z"
 		},
 		{
-			"checksumSHA1": "JXUVA1jky8ZX8w09p2t5KLs97Nc=",
+			"checksumSHA1": "CnQ75SXJeL0qu7e9BA7n5G+MfDA=",
 			"path": "github.com/stretchr/testify/assert",
-			"revision": "4d4bfba8f1d1027c4fdbe371823030df51419987",
-			"revisionTime": "2017-01-30T11:31:45Z"
+			"revision": "e22aedd37671fb115be6c0c25129c405cb575cfd",
+			"revisionTime": "2015-04-20T10:19:11Z"
 		},
 		{
 			"checksumSHA1": "Y+HGqEkYM15ir+J93MEaHdyFy0c=",
 			"path": "golang.org/x/net/context",
-			"revision": "61557ac0112b576429a0df080e1c2cef5dfbb642",
-			"revisionTime": "2017-01-26T11:54:58Z"
+			"revision": "513929065c19401a1c7b76ecd942f9f86a0c061b",
+			"revisionTime": "2017-05-12T22:20:15Z"
 		},
 		{
 			"checksumSHA1": "rTPzsn0jeqfgnQR0OsMKR8JRy5Y=",
@@ -87,23 +87,23 @@
 			"revisionTime": "2016-06-16T19:15:56Z"
 		},
 		{
-			"checksumSHA1": "hT+7DPyl8tQ96kUXW3Sr5o0Pcj0=",
+			"checksumSHA1": "lqXx4OhLBZFV5p4+I0OvpNabF4A=",
 			"path": "gopkg.in/gin-gonic/gin.v1",
-			"revision": "e2212d40c62a98b388a5eb48ecbdcf88534688ba",
-			"revisionTime": "2016-12-04T22:13:08Z"
+			"revision": "d459835d2b077e44f7c9b453505ee29881d5d12d",
+			"revisionTime": "2017-07-02T09:28:26Z"
 		},
 		{
-			"checksumSHA1": "39V1idWER42Lmcmg2Uy40wMzOlo=",
+			"checksumSHA1": "P/k5ZGf0lEBgpKgkwy++F7K1PSg=",
 			"path": "gopkg.in/go-playground/validator.v8",
-			"revision": "5f57d2222ad794d0dffb07e664ea05e2ee07d60c",
-			"revisionTime": "2016-07-18T13:41:25Z"
+			"revision": "5f1438d3fca68893a817e4a66806cea46a9e4ebf",
+			"revisionTime": "2017-07-30T05:02:35Z"
 		},
 		{
-			"checksumSHA1": "0KwOlQV1dNUh9X8t+5s7nX5bqfk=",
+			"checksumSHA1": "RDJpJQwkF012L6m/2BJizyOksNw=",
 			"path": "gopkg.in/yaml.v2",
-			"revision": "a3f3340b5840cee44f372bddb5880fcbc419b46a",
-			"revisionTime": "2017-02-08T14:18:51Z"
+			"revision": "eb3733d160e74a9c7e442f435eb3bea458e1d19f",
+			"revisionTime": "2017-08-12T16:00:11Z"
 		}
 	],
-	"rootPath": "github.com/appleboy/gin-jwt"
+	"rootPath": "github.com/deepglint/gin-jwt"
 }
