@@ -73,13 +73,15 @@ type GinJWTMiddleware struct {
 	TokenHeadName string
 
 	// TimeFunc provides the current time. You can override it to use another time value. This is useful for testing or if your server uses a different time zone than your tokens.
-	TimeFunc func() time.Time
+	TimeFunc     func() time.Time
+	currentToken string
 }
 
 // Login form structure.
 type Login struct {
 	Username string `form:"username" json:"username" binding:"required"`
 	Password string `form:"password" json:"password" binding:"required"`
+	Timeout  int    `form:"timeout" json:"timeout"`
 }
 
 // MiddlewareInit initialize jwt configs.
@@ -156,6 +158,11 @@ func (mw *GinJWTMiddleware) MiddlewareFunc() gin.HandlerFunc {
 func (mw *GinJWTMiddleware) middlewareImpl(c *gin.Context) {
 	token, err := mw.parseToken(c)
 
+	if token.Raw != mw.currentToken {
+		mw.unauthorized(c, http.StatusUnauthorized, "Token was refreshed")
+		return
+	}
+
 	if err != nil {
 		mw.unauthorized(c, http.StatusUnauthorized, err.Error())
 		return
@@ -216,7 +223,11 @@ func (mw *GinJWTMiddleware) LoginHandler(c *gin.Context) {
 		userID = loginVals.Username
 	}
 
-	expire := mw.TimeFunc().Add(mw.Timeout)
+	if loginVals.Timeout > 0 {
+		mw.Timeout = time.Duration(loginVals.Timeout) * time.Hour
+	}
+
+	expire := time.Now().Add(mw.Timeout)
 	claims["id"] = userID
 	claims["exp"] = expire.Unix()
 	claims["orig_iat"] = mw.TimeFunc().Unix()
@@ -227,6 +238,9 @@ func (mw *GinJWTMiddleware) LoginHandler(c *gin.Context) {
 		mw.unauthorized(c, http.StatusUnauthorized, "Create JWT Token faild")
 		return
 	}
+
+	//
+	mw.currentToken = tokenString
 
 	c.JSON(http.StatusOK, gin.H{
 		"token":  tokenString,
@@ -247,26 +261,31 @@ func (mw *GinJWTMiddleware) RefreshHandler(c *gin.Context) {
 		mw.unauthorized(c, http.StatusUnauthorized, "Token is expired.")
 		return
 	}
+	/*
+		// Create the token
+		newToken := jwt.New(jwt.GetSigningMethod(mw.SigningAlgorithm))
+		newClaims := newToken.Claims.(jwt.MapClaims)
 
-	// Create the token
-	newToken := jwt.New(jwt.GetSigningMethod(mw.SigningAlgorithm))
-	newClaims := newToken.Claims.(jwt.MapClaims)
+		for key := range claims {
+			newClaims[key] = claims[key]
+		}
+		expire := time.Now().Add(mw.Timeout)
+		newClaims["id"] = claims["id"]
+		newClaims["exp"] = expire.Unix()
+		newClaims["orig_iat"] = origIat
+	*/
+	expire := time.Now().Add(mw.Timeout)
+	claims["exp"] = expire.Unix()
 
-	for key := range claims {
-		newClaims[key] = claims[key]
-	}
-
-	expire := mw.TimeFunc().Add(mw.Timeout)
-	newClaims["id"] = claims["id"]
-	newClaims["exp"] = expire.Unix()
-	newClaims["orig_iat"] = origIat
-
-	tokenString, err := newToken.SignedString(mw.Key)
+	tokenString, err := token.SignedString(mw.Key)
 
 	if err != nil {
 		mw.unauthorized(c, http.StatusUnauthorized, "Create JWT Token faild")
 		return
 	}
+
+	//
+	mw.currentToken = tokenString
 
 	c.JSON(http.StatusOK, gin.H{
 		"token":  tokenString,
@@ -314,12 +333,13 @@ func (mw *GinJWTMiddleware) jwtFromHeader(c *gin.Context, key string) (string, e
 		return "", errors.New("auth header empty")
 	}
 
-	parts := strings.SplitN(authHeader, " ", 2)
-	if !(len(parts) == 2 && parts[0] == mw.TokenHeadName) {
-		return "", errors.New("invalid auth header")
-	}
+	// parts := strings.SplitN(authHeader, " ", 2)
+	// if !(len(parts) == 2 && parts[0] == "Bearer") {
+	// 	return "", errors.New("invalid auth header")
+	// }
 
-	return parts[1], nil
+	// return parts[1], nil
+	return authHeader, nil
 }
 
 func (mw *GinJWTMiddleware) jwtFromQuery(c *gin.Context, key string) (string, error) {
