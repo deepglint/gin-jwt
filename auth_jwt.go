@@ -6,9 +6,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gin-gonic/gin"
-	"github.com/gin-gonic/gin/binding"
 	"gopkg.in/dgrijalva/jwt-go.v3"
+	"gopkg.in/gin-gonic/gin.v1"
+	"gopkg.in/gin-gonic/gin.v1/binding"
 )
 
 // GinJWTMiddleware provides a Json-Web-Token authentication implementation. On failure, a 401 HTTP response
@@ -157,14 +157,12 @@ func (mw *GinJWTMiddleware) MiddlewareFunc() gin.HandlerFunc {
 
 func (mw *GinJWTMiddleware) middlewareImpl(c *gin.Context) {
 	token, err := mw.parseToken(c)
-
-	if token.Raw != mw.currentToken {
-		mw.unauthorized(c, http.StatusUnauthorized, "Token was refreshed")
-		return
-	}
-
 	if err != nil {
 		mw.unauthorized(c, http.StatusUnauthorized, err.Error())
+		return
+	}
+	if token.Raw != mw.currentToken {
+		mw.unauthorized(c, http.StatusUnauthorized, "Token was refreshed")
 		return
 	}
 

@@ -5,8 +5,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/appleboy/gin-jwt"
-	"github.com/gin-gonic/gin"
+	"github.com/deepglint/gin-jwt"
+	"gopkg.in/gin-gonic/gin.v1"
 )
 
 func helloHandler(c *gin.Context) {
