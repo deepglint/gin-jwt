@@ -287,10 +287,10 @@ func (mw *GinJWTMiddleware) middlewareImpl(c *gin.Context) {
 		mw.unauthorized(c, http.StatusUnauthorized, mw.HTTPStatusMessageFunc(err, c))
 		return
 	}
-	if token.Raw != mw.currentToken {
-		mw.unauthorized(c, http.StatusUnauthorized, "Token was refreshed")
-		return
-	}
+	// if token.Raw != mw.currentToken {
+	// 	mw.unauthorized(c, http.StatusUnauthorized, "Token was refreshed")
+	// 	return
+	// }
 
 	claims := token.Claims.(jwt.MapClaims)
 
@@ -349,12 +349,10 @@ func (mw *GinJWTMiddleware) LoginHandler(c *gin.Context) {
 	if userID == "" {
 		userID = loginVals.Username
 	}
-
 	if loginVals.Timeout > 0 {
 		mw.Timeout = time.Duration(loginVals.Timeout) * time.Hour
 	}
 
-	// expire := time.Now().Add(mw.Timeout)
 	expire := mw.TimeFunc().Add(mw.Timeout)
 	claims["id"] = userID
 	claims["exp"] = expire.Unix()
@@ -473,14 +471,14 @@ func (mw *GinJWTMiddleware) jwtFromHeader(c *gin.Context, key string) (string, e
 		return "", ErrEmptyAuthHeader
 	}
 
-	// // CONFLICT
-	// parts := strings.SplitN(authHeader, " ", 2)
-	// if !(len(parts) == 2 && parts[0] == mw.TokenHeadName) {
-	// 	return "", ErrInvalidAuthHeader
-	// }
+	// CONFLICT
+	parts := strings.SplitN(authHeader, " ", 2)
+	if !(len(parts) == 2 && parts[0] == mw.TokenHeadName) {
+		return "", ErrInvalidAuthHeader
+	}
 
-	// return parts[1], nil
-	return authHeader, nil
+	return parts[1], nil
+	// return authHeader, nil
 }
 
 func (mw *GinJWTMiddleware) jwtFromQuery(c *gin.Context, key string) (string, error) {
