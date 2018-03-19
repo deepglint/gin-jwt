@@ -287,10 +287,11 @@ func (mw *GinJWTMiddleware) middlewareImpl(c *gin.Context) {
 		mw.unauthorized(c, http.StatusUnauthorized, mw.HTTPStatusMessageFunc(err, c))
 		return
 	}
-	// if token.Raw != mw.currentToken {
-	// 	mw.unauthorized(c, http.StatusUnauthorized, "Token was refreshed")
-	// 	return
-	// }
+	// 作废刷新之前的秘钥
+	if token.Raw != mw.currentToken {
+		mw.unauthorized(c, http.StatusUnauthorized, "Token was refreshed")
+		return
+	}
 
 	claims := token.Claims.(jwt.MapClaims)
 
@@ -472,13 +473,13 @@ func (mw *GinJWTMiddleware) jwtFromHeader(c *gin.Context, key string) (string, e
 	}
 
 	// CONFLICT
-	parts := strings.SplitN(authHeader, " ", 2)
-	if !(len(parts) == 2 && parts[0] == mw.TokenHeadName) {
-		return "", ErrInvalidAuthHeader
-	}
+	// parts := strings.SplitN(authHeader, " ", 2)
+	// if !(len(parts) == 2 && parts[0] == mw.TokenHeadName) {
+	// 	return "", ErrInvalidAuthHeader
+	// }
 
-	return parts[1], nil
-	// return authHeader, nil
+	// return parts[1], nil
+	return authHeader, nil
 }
 
 func (mw *GinJWTMiddleware) jwtFromQuery(c *gin.Context, key string) (string, error) {
