@@ -8,9 +8,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	"gopkg.in/dgrijalva/jwt-go.v3"
-	"gopkg.in/gin-gonic/gin.v1"
-	"gopkg.in/gin-gonic/gin.v1/binding"
 )
 
 // GinJWTMiddleware provides a Json-Web-Token authentication implementation. On failure, a 401 HTTP response
@@ -354,7 +354,8 @@ func (mw *GinJWTMiddleware) LoginHandler(c *gin.Context) {
 		mw.Timeout = time.Duration(loginVals.Timeout) * time.Hour
 	}
 
-	expire := time.Now().Add(mw.Timeout)
+	// expire := time.Now().Add(mw.Timeout)
+	expire := mw.TimeFunc().Add(mw.Timeout)
 	claims["id"] = userID
 	claims["exp"] = expire.Unix()
 	claims["orig_iat"] = mw.TimeFunc().Unix()
@@ -399,26 +400,7 @@ func (mw *GinJWTMiddleware) RefreshHandler(c *gin.Context) {
 		mw.unauthorized(c, http.StatusUnauthorized, mw.HTTPStatusMessageFunc(ErrExpiredToken, c))
 		return
 	}
-	/*
-		// Create the token
-		newToken := jwt.New(jwt.GetSigningMethod(mw.SigningAlgorithm))
-		newClaims := newToken.Claims.(jwt.MapClaims)
 
-		for key := range claims {
-			newClaims[key] = claims[key]
-		}
-		expire := time.Now().Add(mw.Timeout)
-		newClaims["id"] = claims["id"]
-		newClaims["exp"] = expire.Unix()
-		newClaims["orig_iat"] = origIat
-
-		expire := time.Now().Add(mw.Timeout)
-		claims["exp"] = expire.Unix()
-
-		tokenString, err := token.SignedString(mw.Key)
-	*/
-
-	// CONFLICT
 	// Create the token
 	newToken := jwt.New(jwt.GetSigningMethod(mw.SigningAlgorithm))
 	newClaims := newToken.Claims.(jwt.MapClaims)
@@ -490,17 +472,12 @@ func (mw *GinJWTMiddleware) jwtFromHeader(c *gin.Context, key string) (string, e
 	if authHeader == "" {
 		return "", ErrEmptyAuthHeader
 	}
-
+	
+	// // CONFLICT
 	// parts := strings.SplitN(authHeader, " ", 2)
-	// if !(len(parts) == 2 && parts[0] == "Bearer") {
-	// 	return "", errors.New("invalid auth header")
+	// if !(len(parts) == 2 && parts[0] == mw.TokenHeadName) {
+	// 	return "", ErrInvalidAuthHeader
 	// }
-
-	// CONFLICT
-	parts := strings.SplitN(authHeader, " ", 2)
-	if !(len(parts) == 2 && parts[0] == mw.TokenHeadName) {
-		return "", ErrInvalidAuthHeader
-	}
 
 	// return parts[1], nil
 	return authHeader, nil
