@@ -288,10 +288,10 @@ func (mw *GinJWTMiddleware) middlewareImpl(c *gin.Context) {
 		return
 	}
 	// 作废刷新之前的秘钥
-	if token.Raw != mw.currentToken {
-		mw.unauthorized(c, http.StatusUnauthorized, "Token was refreshed")
-		return
-	}
+	//if token.Raw != mw.currentToken {
+	//	mw.unauthorized(c, http.StatusUnauthorized, "Token was refreshed")
+	//	return
+	//}
 
 	claims := token.Claims.(jwt.MapClaims)
 
