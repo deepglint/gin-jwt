@@ -10,6 +10,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
+	"github.com/golang/glog"
 	"gopkg.in/dgrijalva/jwt-go.v3"
 )
 
@@ -41,7 +42,7 @@ type GinJWTMiddleware struct {
 	// Callback function that should perform the authentication of the user based on userID and
 	// password. Must return true on success, false on failure. Required.
 	// Option return user id, if so, user id will be stored in Claim Array.
-	Authenticator func(userID string, password string, c *gin.Context) (string, bool)
+	Authenticator func(userID string, password string, c *gin.Context) (string, int)
 
 	// Callback function that should perform the authorization of the authenticated user. Called
 	// only after an authentication success. Must return true on success, false on failure.
@@ -284,6 +285,7 @@ func (mw *GinJWTMiddleware) MiddlewareFunc() gin.HandlerFunc {
 func (mw *GinJWTMiddleware) middlewareImpl(c *gin.Context) {
 	token, err := mw.parseToken(c)
 	if err != nil {
+		glog.Error(err)
 		mw.unauthorized(c, http.StatusUnauthorized, mw.HTTPStatusMessageFunc(err, c))
 		return
 	}
@@ -314,6 +316,7 @@ func (mw *GinJWTMiddleware) LoginHandler(c *gin.Context) {
 
 	// Initial middleware default setting.
 	if err := mw.MiddlewareInit(); err != nil {
+		glog.Errorln(err)
 		mw.unauthorized(c, http.StatusInternalServerError, mw.HTTPStatusMessageFunc(err, c))
 		return
 	}
@@ -330,10 +333,10 @@ func (mw *GinJWTMiddleware) LoginHandler(c *gin.Context) {
 		return
 	}
 
-	userID, ok := mw.Authenticator(loginVals.Username, loginVals.Password, c)
+	userID, authCode := mw.Authenticator(loginVals.Username, loginVals.Password, c)
 
-	if !ok {
-		mw.unauthorized(c, http.StatusUnauthorized, mw.HTTPStatusMessageFunc(ErrFailedAuthentication, c))
+	if authCode > 0 {
+		mw.unauthorized(c, authCode, mw.HTTPStatusMessageFunc(ErrFailedAuthentication, c))
 		return
 	}
 
@@ -361,6 +364,7 @@ func (mw *GinJWTMiddleware) LoginHandler(c *gin.Context) {
 	tokenString, err := mw.signedString(token)
 
 	if err != nil {
+		glog.Errorln(err)
 		mw.unauthorized(c, http.StatusUnauthorized, mw.HTTPStatusMessageFunc(ErrFailedTokenCreation, c))
 		return
 	}
@@ -369,7 +373,7 @@ func (mw *GinJWTMiddleware) LoginHandler(c *gin.Context) {
 	mw.currentToken = tokenString
 
 	c.JSON(http.StatusOK, gin.H{
-		"code":   http.StatusOK,
+		"Code":   1,
 		"token":  tokenString,
 		"expire": expire.Format(time.RFC3339),
 	})
@@ -396,7 +400,8 @@ func (mw *GinJWTMiddleware) RefreshHandler(c *gin.Context) {
 	origIat := int64(claims["orig_iat"].(float64))
 
 	if origIat < mw.TimeFunc().Add(-mw.MaxRefresh).Unix() {
-		mw.unauthorized(c, http.StatusUnauthorized, mw.HTTPStatusMessageFunc(ErrExpiredToken, c))
+		//给前端返回的token超时的错误码
+		mw.unauthorized(c, 2004, mw.HTTPStatusMessageFunc(ErrExpiredToken, c))
 		return
 	}
 
@@ -415,6 +420,7 @@ func (mw *GinJWTMiddleware) RefreshHandler(c *gin.Context) {
 	tokenString, err := mw.signedString(newToken)
 
 	if err != nil {
+		glog.Errorln(err)
 		mw.unauthorized(c, http.StatusUnauthorized, mw.HTTPStatusMessageFunc(ErrFailedTokenCreation, c))
 		return
 	}
@@ -423,7 +429,7 @@ func (mw *GinJWTMiddleware) RefreshHandler(c *gin.Context) {
 	mw.currentToken = tokenString
 
 	c.JSON(http.StatusOK, gin.H{
-		"code":   http.StatusOK,
+		"Code":   1,
 		"token":  tokenString,
 		"expire": expire.Format(time.RFC3339),
 	})
