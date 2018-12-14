@@ -409,8 +409,8 @@ func (mw *GinJWTMiddleware) RefreshHandler(c *gin.Context) {
 
 	origIat := int64(claims["orig_iat"].(float64))
 
-	glog.Infof("JWT token time %d, timeout stamp %d", origIat, mw.TimeFunc().Add(-mw.MaxRefresh).Unix() )
-	if origIat < mw.TimeFunc().Add(-mw.MaxRefresh).Unix() {
+	glog.Infof("JWT token time %d, timeout stamp %d", origIat, mw.TimeFunc().Add(-mw.Timeout).Unix() )
+	if origIat < mw.TimeFunc().Add(-mw.Timeout).Unix() {
 		//给前端返回的token超时的错误码
 		mw.unauthorized(c, 2004, mw.HTTPStatusMessageFunc(ErrExpiredToken, c))
 		return
@@ -472,7 +472,7 @@ func (mw *GinJWTMiddleware) TokenGenerator(userID string) (string, time.Time, er
 		}
 	}
 
-	expire := mw.TimeFunc().Add(mw.Timeout)
+	expire := mw.TimeFunc().UTC().Add(mw.Timeout)
 	claims["id"] = userID
 	claims["exp"] = expire.Unix()
 	claims["orig_iat"] = mw.TimeFunc().Unix()
