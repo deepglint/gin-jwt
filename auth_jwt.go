@@ -288,7 +288,7 @@ func (mw *GinJWTMiddleware) middlewareImpl(c *gin.Context) {
 		glog.Error(err)
 		if strings.Contains(err.Error(), "expired") {
 			mw.unauthorized(c, 2004, mw.HTTPStatusMessageFunc(err, c))
-		}else{
+		} else {
 			mw.unauthorized(c, http.StatusUnauthorized, mw.HTTPStatusMessageFunc(err, c))
 		}
 		return
@@ -361,9 +361,8 @@ func (mw *GinJWTMiddleware) LoginHandler(c *gin.Context) {
 		mw.Timeout = time.Duration(loginVals.Timeout) * time.Hour // time.Duration(30) * time.Second //
 	}
 
-	glog.Infof("JWT %s %s %s", mw.TimeFunc().Format(time.RFC3339), mw.Timeout.String(),time.Now().Format(time.RFC3339))
 	expire := mw.TimeFunc().Add(mw.Timeout)
-	glog.Infof("JWT %s", expire.Format(time.RFC3339))
+	glog.Infof("JWT token 当前时间：%s，过期时间：%s", mw.TimeFunc().Format(time.RFC3339), expire.Format(time.RFC3339))
 	claims["id"] = userID
 	claims["exp"] = expire.Unix()
 	claims["orig_iat"] = mw.TimeFunc().Unix()
@@ -401,7 +400,7 @@ func (mw *GinJWTMiddleware) signedString(token *jwt.Token) (string, error) {
 // Reply will be of the form {"token": "TOKEN"}.
 func (mw *GinJWTMiddleware) RefreshHandler(c *gin.Context) {
 	token, err := mw.parseToken(c)
-	if err!=nil && strings.Contains(err.Error(),"expired") {
+	if err != nil && strings.Contains(err.Error(), "expired") {
 		mw.unauthorized(c, 2004, mw.HTTPStatusMessageFunc(ErrExpiredToken, c))
 		return
 	}
@@ -409,7 +408,7 @@ func (mw *GinJWTMiddleware) RefreshHandler(c *gin.Context) {
 
 	origIat := int64(claims["orig_iat"].(float64))
 
-	glog.Infof("JWT token time %d, timeout stamp %d", origIat, mw.TimeFunc().Add(-mw.Timeout).Unix() )
+	glog.Infof("JWT token time %d, timeout stamp %d", origIat, mw.TimeFunc().Add(-mw.Timeout).Unix())
 	if origIat < mw.TimeFunc().Add(-mw.Timeout).Unix() {
 		//给前端返回的token超时的错误码
 		mw.unauthorized(c, 2004, mw.HTTPStatusMessageFunc(ErrExpiredToken, c))
@@ -424,12 +423,11 @@ func (mw *GinJWTMiddleware) RefreshHandler(c *gin.Context) {
 		newClaims[key] = claims[key]
 	}
 
-	glog.Infof("JWT %s %s %s", mw.TimeFunc().Format(time.RFC3339), mw.Timeout.String(),time.Now().Format(time.RFC3339))
 	expire := mw.TimeFunc().Add(mw.Timeout)
-	glog.Infof("JWT %s", expire.Format(time.RFC3339))
+	glog.Infof("JWT token 最后刷新时间：%s，过期时间：%s", time.Unix(origIat, 0).Format(time.RFC3339), expire.Format(time.RFC3339))
 	newClaims["id"] = claims["id"]
 	newClaims["exp"] = expire.Unix()
-	newClaims["orig_iat"] = origIat
+	newClaims["orig_iat"] = mw.TimeFunc().Unix() // origIat
 	tokenString, err := mw.signedString(newToken)
 
 	if err != nil {
